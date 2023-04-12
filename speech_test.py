@@ -20,8 +20,26 @@ def get_response_from_chat_gpt_story_bot(text):
     text = response['choices'][0]['message']['content']
     return text
 
+
+def get_response_from_chat_gpt_evaluate_bot(text, summary):
+    #print("getting a response from chat gpt for the text", text)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Du är en AI bot som utvärderar sammanfattningar av text. Det här är texten som du ska sammanfatta:" + text},
+            {"role": "user", "content": "Sammanfattning: " + summary + " Svara enbart med en siffra 0-10:"}
+        ]
+    )
+
+    text = response['choices'][0]['message']['content']
+    return text
+
+
 # print(get_response_from_chat_gpt("I am feeling anxious."))
-story = get_response_from_chat_gpt_story_bot("Skriv en berättelse om en katt som är rädd för hundar.")
+story = get_response_from_chat_gpt_story_bot("Skriv en berättelse på 50 ord")
 print(story)
 
-synthesize_speech(story, language="sv")
+score = get_response_from_chat_gpt_evaluate_bot(story, "En historia om en modig människa")
+
+print("the score is", score)
+# synthesize_speech(story, language="sv")
